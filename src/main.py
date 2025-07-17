@@ -1,12 +1,16 @@
+import numpy as np
+import uvicorn
+from PIL import Image
+import base64
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import numpy as np
-from PIL import Image
-import tensorflow as tf
+from top_similarity import preprocess_image_pil, get_top_k_similar_images
+from constants.model import CLASS_LABELS
+from utils.utils import full_model, embedding_model
+
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,25 +19,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = tf.keras.models.load_model("./model/model_keras.keras")
-class_labels = ['NORMAL', 'BACTERIAL', 'VIRAL']
-
-def preprocess_image(image: Image.Image) -> np.ndarray:
-    image = image.resize((224, 224))
-    image = np.array(image) / 255.0
-    if len(image.shape) == 2:
-        image = np.stack((image,)*3, axis=-1)
-    image = np.expand_dims(image, axis=0)
-    return image
+model_full = full_model()
+model_embedding = embedding_model()
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     image = Image.open(file.file).convert("RGB")
-    input_array = preprocess_image(image)
-    prediction = model.predict(input_array)
-    predicted_class = class_labels[np.argmax(prediction)]
-    confidence = float(np.max(prediction))
-    return {"class": predicted_class, "confidence": confidence}
+    input_array = preprocess_image_pil(image)
+    
+    pred = model_full.predict(input_array)
+    predicted_class = CLASS_LABELS[np.argmax(pred)]
+    confidence = float(np.max(pred))
+    embedding = model_embedding.predict(input_array)
+    similar_images = get_top_k_similar_images(embedding, k=5, predicted_class=predicted_class)
+
+    return {
+        "class": predicted_class,
+        "confidence": confidence,
+        "similar_images": similar_images
+    }
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
