@@ -230,7 +230,8 @@ export default {
       isDragOver: false,
       isAnalyzing: false,
       processingTime: 0,
-      similarImages: []
+      similarImages: [],
+      medicalExplanation: null
     };
   },
   methods: {
@@ -256,6 +257,7 @@ export default {
       this.selectedFile = null;
       this.prediction = null;
       this.imagePreviewUrl = null;
+      this.medicalExplanation = null;
       this.$refs.fileInput.value = '';
     },
     async predict() {
@@ -276,6 +278,7 @@ export default {
         const data = await response.json();
         this.prediction = data;
         this.similarImages = data.similar_images;
+        this.medicalExplanation = data.medical_explanation;
         this.processingTime = Date.now() - startTime;
       } catch (error) {
         console.error("Prediction error:", error);
@@ -1087,38 +1090,42 @@ export default {
 }
 
 /* Similar Images Container - Adaptado al tema oscuro/claro */
-.similar-images-container {
+.upload-page .similar-images-container {
   margin-top: 2rem !important;
   padding: 2rem !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  backdrop-filter: blur(10px) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(20px) !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Tema claro */
 @media (prefers-color-scheme: light) {
-  .similar-images-container {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  .upload-page .similar-images-container {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
   }
 }
 
-.similar-images-container h3 {
-  color: rgba(255, 255, 255, 0.87) !important;
+.upload-page .similar-images-container h3 {
+  color: #ffffff !important;
   font-size: 1.8rem !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   margin-bottom: 1.5rem !important;
   text-align: center !important;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Tema claro para el título */
 @media (prefers-color-scheme: light) {
-  .similar-images-container h3 {
+  .upload-page .similar-images-container h3 {
     color: #213547 !important;
+    text-shadow: none !important;
   }
 }
 
@@ -1132,129 +1139,234 @@ export default {
 }
 
 /* Tarjetas de imágenes similares */
-.similar-card {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
+.upload-page .similar-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
   overflow: hidden !important;
-  transition: all 0.3s ease !important;
-  backdrop-filter: blur(5px) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  backdrop-filter: blur(20px) !important;
   position: relative !important;
   display: flex !important;
   flex-direction: column !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Tema claro para las tarjetas */
 @media (prefers-color-scheme: light) {
-  .similar-card {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  .upload-page .similar-card {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
   }
 }
 
-.similar-card:hover {
-  transform: translateY(-2px) !important;
-  border-color: #646cff !important;
-  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.15) !important;
+.upload-page .similar-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  border-color: #00f5ff !important;
+  box-shadow: 0 20px 40px rgba(0, 245, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .upload-page .similar-card:hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 20px 40px rgba(0, 245, 255, 0.2) !important;
+  }
 }
 
 /* Contenedor para la imagen que mantiene el aspect ratio */
-.similar-card .image-container {
+.upload-page .similar-image-wrapper {
   width: 100% !important;
-  height: 180px !important;
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  height: 200px !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden !important;
+  position: relative !important;
+  border-radius: 12px 12px 0 0 !important;
 }
 
 @media (prefers-color-scheme: light) {
-  .similar-card .image-container {
-    background-color: rgba(0, 0, 0, 0.02) !important;
+  .upload-page .similar-image-wrapper {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%) !important;
   }
 }
 
-.similar-card img {
+.upload-page .similar-image-wrapper img {
   max-width: 100% !important;
   max-height: 100% !important;
   width: auto !important;
   height: auto !important;
   object-fit: contain !important;
-  transition: transform 0.3s ease !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   display: block !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
 }
 
-.similar-card:hover img {
-  transform: scale(1.02) !important;
+.upload-page .similar-card:hover .similar-image-wrapper img {
+  transform: scale(1.05) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
 }
 
-.similar-card-title {
-  padding: 1rem 1rem 0.5rem !important;
-  font-size: 1.1rem !important;
+/* Overlay con badge de similitud */
+.upload-page .similar-overlay {
+  position: absolute !important;
+  top: 0.75rem !important;
+  right: 0.75rem !important;
+  z-index: 2 !important;
+}
+
+.upload-page .similarity-badge {
+  background: linear-gradient(135deg, #00f5ff 0%, #0066ff 100%) !important;
+  color: #ffffff !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 20px !important;
+  font-size: 0.75rem !important;
   font-weight: 600 !important;
-  color: #646cff !important;
-  text-align: center !important;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 245, 255, 0.4) !important;
+  animation: pulse 2s ease-in-out infinite !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
 }
 
-.similar-card-label {
-  padding: 0 1rem 1rem !important;
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.upload-page .similar-info {
+  padding: 1rem !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .upload-page .similar-info {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.upload-page .similar-diagnosis {
   font-size: 0.9rem !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 600 !important;
   text-align: center !important;
-  line-height: 1.4 !important;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
-/* Tema claro para el label */
+.upload-page .similar-diagnosis::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+  border-radius: 20px !important;
+  z-index: -1 !important;
+}
+
 @media (prefers-color-scheme: light) {
-  .similar-card-label {
-    color: rgba(33, 53, 71, 0.7) !important;
+  .upload-page .similar-diagnosis::before {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 100%) !important;
   }
 }
 
-.similar-card-label strong {
-  color: rgba(255, 255, 255, 0.87) !important;
-  font-weight: 500 !important;
+.upload-page .similar-diagnosis.diagnosis-normal {
+  background: rgba(0, 255, 136, 0.2) !important;
+  color: #00ff88 !important;
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(0, 255, 136, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Tema claro para el strong */
-@media (prefers-color-scheme: light) {
-  .similar-card-label strong {
-    color: #213547 !important;
-  }
+.upload-page .similar-diagnosis.diagnosis-bacterial {
+  background: rgba(255, 68, 68, 0.2) !important;
+  color: #ff4444 !important;
+  border: 1px solid rgba(255, 68, 68, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.upload-page .similar-diagnosis.diagnosis-viral {
+  background: rgba(255, 184, 68, 0.2) !important;
+  color: #ffb844 !important;
+  border: 1px solid rgba(255, 184, 68, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(255, 184, 68, 0.3) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.upload-page .similar-card:hover .similar-diagnosis {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .similar-images-container {
+  .upload-page .similar-images-container {
     padding: 1.5rem !important;
     margin-top: 1.5rem !important;
   }
   
-  .similar-images-container h3 {
+  .upload-page .similar-images-container h3 {
     font-size: 1.5rem !important;
     margin-bottom: 1rem !important;
   }
   
-  .similar-images-grid {
+  .upload-page .similar-images-grid {
     grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+    gap: 1.5rem !important;
   }
   
-  .similar-card .image-container {
-    height: 160px !important;
+  .upload-page .similar-image-wrapper {
+    height: 180px !important;
   }
   
-  .similar-card-title {
-    font-size: 1rem !important;
-    padding: 0.75rem 0.75rem 0.5rem !important;
+  .upload-page .similar-info {
+    padding: 0.75rem !important;
   }
   
-  .similar-card-label {
+  .upload-page .similar-diagnosis {
     font-size: 0.85rem !important;
-    padding: 0 0.75rem 0.75rem !important;
+    padding: 0.4rem 0.8rem !important;
+  }
+  
+  .upload-page .similarity-badge {
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.6rem !important;
+  }
+  
+  .upload-page .medical-explanation-container {
+    padding: 1.5rem !important;
+    margin: 1.5rem 0 !important;
+  }
+  
+  .upload-page .medical-explanation-container h3 {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .upload-page .medical-explanation-text {
+    font-size: 0.95rem !important;
+    padding: 0.75rem !important;
+    line-height: 1.6 !important;
   }
 }
 
@@ -1305,4 +1417,143 @@ export default {
     color: rgba(33, 53, 71, 0.6);
   }
 }
+
+/* Medical Explanation Container - Modern Styling */
+.upload-page .medical-explanation-container {
+  margin: 2rem 0 !important;
+  padding: 2rem !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(20px) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.upload-page .medical-explanation-container::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, #00f5ff 0%, #0066ff 50%, #00ff88 100%) !important;
+  animation: gradientShift 3s ease-in-out infinite !important;
+}
+
+@keyframes gradientShift {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(30deg); }
+}
+
+/* Light theme for medical explanation */
+@media (prefers-color-scheme: light) {
+  .upload-page .medical-explanation-container {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+.upload-page .medical-explanation-container:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(0, 245, 255, 0.4) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 40px rgba(0, 245, 255, 0.15) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .upload-page .medical-explanation-container:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(0, 245, 255, 0.4) !important;
+  }
+}
+
+.upload-page .medical-explanation-container h3 {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1rem !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.upload-page .medical-explanation-container h3::before {
+  content: '🔬' !important;
+  font-size: 1.2rem !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .upload-page .medical-explanation-container h3 {
+    color: #213547 !important;
+    text-shadow: none !important;
+  }
+}
+
+.upload-page .medical-explanation-text {
+  font-size: 1rem !important;
+  line-height: 1.7 !important;
+  color: #ffffff !important;
+  font-weight: 400 !important;
+  text-align: justify !important;
+  padding: 1.5rem !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  border-left: 4px solid #00ff88 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  animation: fadeInUp 0.6s ease-out !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .upload-page .medical-explanation-text {
+    color: #213547 !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    text-shadow: none !important;
+  }
+}
+
+/* Responsive design for medical explanation */
+@media (max-width: 768px) {
+  .medical-explanation-container {
+    padding: 1.5rem !important;
+    margin: 1.5rem 0 !important;
+  }
+  
+  .medical-explanation-container h3 {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .medical-explanation-text {
+    font-size: 0.95rem !important;
+    padding: 0.75rem !important;
+    line-height: 1.6 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .medical-explanation-container {
+    padding: 1rem !important;
+    margin: 1rem 0 !important;
+  }
+  
+  .medical-explanation-container h3 {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .medical-explanation-text {
+    font-size: 0.9rem !important;
+    padding: 0.5rem !important;
+    line-height: 1.5 !important;
+  }
+}
 </style>
+
