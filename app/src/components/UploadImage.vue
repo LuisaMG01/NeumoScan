@@ -189,6 +189,10 @@
         <!-- Similar Images -->
         <div class="similar-images-container" v-if="similarImages.length">
           <h3 class="title-gradient">Similar Cases</h3>
+          <div class="medical-explanation-container" v-if="medicalExplanation">
+            <h3 class="title-gradient">Medical Explanation</h3>
+            <p class="medical-explanation-text">{{ medicalExplanation }}</p>
+          </div>
           <div class="similar-images-grid">
             <div
               v-for="(img, index) in similarImages"

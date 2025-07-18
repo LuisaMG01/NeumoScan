@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from top_similarity import preprocess_image_pil, get_top_k_similar_images
 from constants.model import CLASS_LABELS
 from utils.utils import full_model, embedding_model
+from medical_explanation import generate_medical_explanation
 
 
 app = FastAPI()
@@ -32,11 +33,14 @@ async def predict(file: UploadFile = File(...)):
     confidence = float(np.max(pred))
     embedding = model_embedding.predict(input_array)
     similar_images = get_top_k_similar_images(embedding, k=5, predicted_class=predicted_class)
+    medical_explanation = generate_medical_explanation(predicted_class, similar_images)
 
+    print(medical_explanation)
     return {
         "class": predicted_class,
         "confidence": confidence,
-        "similar_images": similar_images
+        "similar_images": similar_images,
+        "medical_explanation": medical_explanation
     }
 
 if __name__ == "__main__":
