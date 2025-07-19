@@ -1,3 +1,4 @@
+#This module generates a clear medical explanation about a prediction, based on clinical descriptions of similar images, using a language model (default: Llama 3).
 import ollama
 
 from utils.utils import get_descriptions
