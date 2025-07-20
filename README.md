@@ -7,7 +7,7 @@
 NeumoScan is a deep learning-based tool designed to detect pneumonia from chest X-ray images. Beyond determining the presence of pneumonia, it can classify it as **bacterial** or **viral**. The main goal is to support healthcare professionals in making fast and accurate diagnoses using artificial intelligence.
 
 
-## Repository Structure
+## Directory Structure and Organization of the NEUMOSCANER Project
 
 ![Arquitectura](arquitectura.jpeg)
 
