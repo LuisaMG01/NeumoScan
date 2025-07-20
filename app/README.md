@@ -1,0 +1,1 @@
+The **app** folder contains the files and subfolders necessary for the **user interface** and **styles** of the application. Its main purpose is to organize and isolate all the code related to the visual presentation and the structure of the frontend.
